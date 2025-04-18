@@ -19,19 +19,52 @@ export default function TaskBoard() {
 
   const [tasks, setTasks] = useState(defaultTasks);
   const [isAddTask, setIsAddTask] = useState(false);
+  const [taskToUpdate, setTaskToUpdate] = useState(null);
 
   const handleAddTaskClose = () => {
     setIsAddTask(false);
+    setTaskToUpdate(null);
   };
 
-  const handleClickTask = (task) => {
-    console.log("adding task", task);
+  const handleClickTask = (newTask, isAdd) => {
+    if (isAdd) {
+      setTasks([...tasks, { ...newTask, id: crypto.randomUUID() }]);
+    } else {
+      setTasks(
+        tasks.map((task) => {
+          if (task.id === newTask.id) {
+            return newTask;
+          }
+          return task;
+        })
+      );
+    }
+    setIsAddTask(false);
+    setTaskToUpdate(null);
+  };
+
+  const handleEditTask = (taskToEdit) => {
+    setTaskToUpdate(taskToEdit);
+    setIsAddTask(true);
+  };
+
+  const handleAddNewTask = () => {
+    setTaskToUpdate(null);
+    setIsAddTask(true);
+  };
+
+  const handleDeleteTask = (taskId) => {
+    setTasks(tasks.filter((task) => task.id !== taskId));
   };
 
   return (
     <section className="mb-20" id="tasks">
       {isAddTask && (
-        <AddTask onSave={handleClickTask} onClose={handleAddTaskClose} />
+        <AddTask
+          onSave={handleClickTask}
+          onClose={handleAddTaskClose}
+          taskToUpdate={taskToUpdate}
+        />
       )}
       <div className="container">
         {/* Search Box */}
@@ -40,9 +73,13 @@ export default function TaskBoard() {
         </div>
         <div className="rounded-xl border border-[rgba(206,206,206,0.12)] bg-[#1D212B] px-6 py-8 md:px-9 md:py-16">
           {/* Task Action */}
-          <TaskAction onAddClick={() => setIsAddTask(true)} />
+          <TaskAction onAddClick={handleAddNewTask} />
           {/* Task List */}
-          <TaskList tasks={tasks} />
+          <TaskList
+            tasks={tasks}
+            onEdit={handleEditTask}
+            onDelete={handleDeleteTask}
+          />
         </div>
       </div>
     </section>

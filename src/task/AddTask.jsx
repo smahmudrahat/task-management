@@ -1,13 +1,18 @@
 import { useState } from "react";
 
-export default function AddTask({ onClose, onSave }) {
-  const [task, setTask] = useState({
-    title: "",
-    description: "",
-    tags: [],
-    priority: "",
-    isFavorite: false,
-  });
+export default function AddTask({ onClose, onSave, taskToUpdate }) {
+  const [task, setTask] = useState(
+    taskToUpdate || {
+      title: "",
+      description: "",
+      tags: [],
+      priority: "",
+      isFavorite: false,
+    }
+  );
+
+  // isAdd should be true when we're adding a new task (taskToUpdate is null)
+  const isAdd = !taskToUpdate;
 
   const handleChange = (e) => {
     const name = e.target.name;
@@ -16,6 +21,12 @@ export default function AddTask({ onClose, onSave }) {
       value = value.split(",");
     }
     setTask({ ...task, [name]: value });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSave(task, isAdd);
+    onClose();
   };
 
   return (
@@ -27,15 +38,10 @@ export default function AddTask({ onClose, onSave }) {
         >
           ✕
         </button>
-        <h2 className="text-2xl font-bold mb-6">Add New Task</h2>
-        <form
-          className="space-y-9 text-white"
-          onSubmit={(e) => {
-            e.preventDefault();
-            onSave(task);
-            onClose();
-          }}
-        >
+        <h2 className="text-2xl font-bold mb-6 text-center">
+          {isAdd ? "Add New Task" : "Edit Task"}
+        </h2>
+        <form className="space-y-9 text-white" onSubmit={handleSubmit}>
           <div className="space-y-2">
             <label htmlFor="title">Title</label>
             <input
@@ -96,7 +102,7 @@ export default function AddTask({ onClose, onSave }) {
               type="submit"
               className="rounded bg-blue-600 px-4 py-2 text-white transition-all hover:opacity-80 shadow-lg hover:shadow-xl"
             >
-              Create Task
+              {isAdd ? "Create Task" : "Update Task"}
             </button>
           </div>
         </form>
