@@ -13,7 +13,7 @@ export default function TaskBoard() {
         "Connect an existing API to a third-party database using secure methods and handle data exchange efficiently.",
       tags: ["Web", "Python", "API"],
       priority: "High",
-      isFavorite: false,
+      isFavorite: true,
     },
   ];
 
@@ -57,6 +57,14 @@ export default function TaskBoard() {
     setTasks(tasks.filter((task) => task.id !== taskId));
   };
 
+  const handleFavorite = (taskId) => {
+    setTasks((prevTasks) =>
+      prevTasks.map((task) =>
+        task.id === taskId ? { ...task, isFavorite: !task.isFavorite } : task
+      )
+    );
+  };
+
   return (
     <section className="mb-20" id="tasks">
       {isAddTask && (
@@ -79,6 +87,7 @@ export default function TaskBoard() {
             tasks={tasks}
             onEdit={handleEditTask}
             onDelete={handleDeleteTask}
+            onFavorite={handleFavorite}
           />
         </div>
       </div>
